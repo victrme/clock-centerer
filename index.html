@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+		<title>Centered Clock</title>
+
+		<script type="module" src="/src/main.ts" defer></script>
+	</head>
+	<body>
+		<h1>Centered clock</h1>
+
+		<p>
+			Basic clock centered with "text-align: center". Notice that the left
+			side also moves, which can be very distracting.
+		</p>
+
+		<div id="basic-clock" class="clock"></div>
+
+		<p>
+			Now the centered clock. Uses the "ch" size unit, which sizes
+			relative to the "0" character.
+		</p>
+
+		<div id="centered-clock" class="clock"></div>
+
+		<h2>Centerer data</h2>
+		<textarea id="centerer-data"></textarea>
+	</body>
+</html>
