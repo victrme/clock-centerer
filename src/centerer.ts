@@ -1,8 +1,15 @@
-export class Centerer {
+export class CharacterSizer {
 	private _sizes: Record<string, number> = {};
 	private _family = "system-ui";
 	private _chars: string[] = ["0"];
 
+	/**
+	 * CharacterSizer finds the size of any characters compared to zero (0).
+	 * This can be useful for precise fixed width content using the "ch" unit.
+	 *
+	 * Calculating widths is compute-heavy, around 1ms per 20 characters.
+	 * Avoid sizing the whole unicode range!
+	 */
 	constructor(str: string) {
 		str = str.replaceAll("0", "");
 		this._chars.push(...str.split(""));
@@ -18,7 +25,11 @@ export class Centerer {
 		return this._chars;
 	}
 
-	public load(): void {
+	/**
+	 * This stores character sizes compared to "0".
+	 * Beware, this method is compute-heavy.
+	 */
+	public calculate(): void {
 		const container = document.createElement("div");
 		const spans = [];
 		let zeroWidth = 0;
@@ -64,25 +75,35 @@ export class Centerer {
 		container.remove();
 	}
 
-	public size(str: string): number {
+	/**
+	 * Returns the size in "ch" of a specified string.
+	 * Characters present in string but not calculated will be considered "1ch"
+	 */
+	public sizeOf(str: string): number {
 		const chars = str.split("");
 		let size = 0;
 
 		for (const char of chars) {
-			size += this._sizes[char] ?? 0;
+			size += this._sizes[char] ?? 1;
 		}
 
 		return size;
 	}
 
-	public average(str?: string): number {
-		if (!str) {
-			const ratios = Object.values(this._sizes);
-			const sum = ratios.reduce((a, b) => a + b);
-			const average = sum / ratios.length;
-			return average;
-		}
+	/**
+	 * This gives the average ratio of all calculated characters.
+	 */
+	public average(): number {
+		const ratios = Object.values(this._sizes);
+		const sum = ratios.reduce((a, b) => a + b);
+		const average = sum / ratios.length;
+		return average;
+	}
 
+	/**
+	 * This gives the average ratio of specified characters.
+	 */
+	public averageOf(str: string): number {
 		let foundChar = 0;
 		let sum = 0;
 
