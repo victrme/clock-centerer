@@ -1,0 +1,8 @@
+{
+	"compilerOptions": {
+		"target": "ESNext" /* Set the JavaScript language version for emitted JavaScript and include compatible library declarations. */,
+		"lib": ["DOM", "ESNext"],
+		"module": "ESNext" /* Specify what module code is generated. */,
+		"strict": true
+	}
+}
