@@ -1,91 +1,104 @@
-interface Centerer {
-	list: List;
-	family: string;
-	averageAll: number;
-	averageNumber: number;
-}
+export class Centerer {
+	private _sizes: Record<string, number> = {};
+	private _family = "system-ui";
+	private _chars: string[] = ["0"];
 
-type List = Record<string, number>;
-
-export function numberSizer(): Centerer {
-	const container = document.createElement("div");
-	const sizes: List = {};
-
-	const centerer: Centerer = {
-		list: {},
-		family: "",
-		averageAll: 0,
-		averageNumber: 0,
-	};
-
-	const numbers = "0123456789".split("");
-	const chars = "0123456789:-/,".split("");
-	const spans = [];
-	let zeroWidth = 0;
-
-	// 1. Create spans in document
-
-	for (const char of chars) {
-		const span = document.createElement("span");
-		span.textContent = char;
-		span.style.all = "unset";
-		spans.push(span);
+	constructor(str: string) {
+		str = str.replaceAll("0", "");
+		this._chars.push(...str.split(""));
 	}
 
-	container.append(...spans);
-	container.style.position = "absolute";
-	container.style.visibility = "hidden";
-	document.body.append(container);
+	get sizes(): Record<string, number> {
+		return this._sizes;
+	}
+	get family(): string {
+		return this._family;
+	}
+	get chars(): string[] {
+		return this._chars;
+	}
 
-	// 2. Get sizes, then compare them to "0". 2 decimals
+	public load(): void {
+		const container = document.createElement("div");
+		const spans = [];
+		let zeroWidth = 0;
 
-	for (const span of spans) {
-		const char = span.textContent;
-		const width = span.getBoundingClientRect().width;
+		// 1. Create spans in document
 
-		if (char === "0") {
-			sizes["0"] = 1;
-			zeroWidth = width;
-			continue;
+		for (const char of this._chars) {
+			const span = document.createElement("span");
+			span.textContent = char;
+			span.style.all = "unset";
+			spans.push(span);
 		}
 
-		sizes[char] = Math.round((width / zeroWidth) * 100) / 100;
+		container.style.position = "absolute";
+		container.style.visibility = "hidden";
+		container.append(...spans);
+		document.body.append(container);
+
+		// 2. Load font family
+		//    Keep it here to allow more time for container to append to body
+
+		this._family = globalThis.getComputedStyle(document.body).fontFamily;
+		this._family = this._family.split(", ")[0];
+
+		// 3. Get sizes, then compare them to "0"
+		// 	  This gives a size ratio, "0" character being 1.00ch
+
+		for (const span of spans) {
+			const char = span.textContent ?? "";
+			const width = span.getBoundingClientRect().width;
+
+			if (char === "0") {
+				this._sizes["0"] = 1;
+				zeroWidth = width;
+				continue;
+			}
+
+			this._sizes[char] = Math.round((width / zeroWidth) * 100) / 100;
+		}
+
+		// 4. Cleanup
+
+		container.remove();
 	}
 
-	container.remove();
+	public size(str: string): number {
+		const chars = str.split("");
+		let size = 0;
 
-	// 3. Tie found sizes to current font-family
-	// 	  Add more data like averages
+		for (const char of chars) {
+			size += this._sizes[char] ?? 0;
+		}
 
-	const vals = Object.values(sizes);
-	const averageAll = vals.reduce((a, b) => a + b) / chars.length;
-
-	centerer.family = globalThis.getComputedStyle(container).fontFamily;
-	centerer.family = centerer.family.split(", ")[0];
-
-	centerer.list = sizes;
-
-	numbers.forEach((num) => {
-		centerer.averageNumber += sizes[num] / 10;
-	});
-
-	centerer.averageAll = averageAll;
-
-	// 4. Return found data
-
-	return centerer;
-}
-
-/**
- * Returns clock size in "ch"
- */
-export function getStringSize(str: string, sizes: List): number {
-	const chars = str.split("");
-	let size = 0;
-
-	for (const char of chars) {
-		size += sizes[char] ?? 0;
+		return size;
 	}
 
-	return size;
+	public average(str?: string): number {
+		if (!str) {
+			const ratios = Object.values(this._sizes);
+			const sum = ratios.reduce((a, b) => a + b);
+			const average = sum / ratios.length;
+			return average;
+		}
+
+		let foundChar = 0;
+		let sum = 0;
+
+		for (const char of str.split("")) {
+			const size = this._sizes[char];
+
+			if (size) {
+				sum += size;
+				foundChar++;
+			}
+		}
+
+		if (foundChar === 0) {
+			return 1;
+		}
+
+		return sum / foundChar;
+	}
 }
