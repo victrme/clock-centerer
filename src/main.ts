@@ -1,23 +1,23 @@
-import { CharacterSizer } from "./centerer";
-import { Clock } from "./clock";
+import { CharacterSizer } from "./CharacterSizer";
+import { BasicClock } from "./BasicClock";
 
-const basicClock = new Clock();
-const centeredClock = new Clock();
+const clock = new BasicClock();
+const centeredClock = new BasicClock();
 const charSizer = new CharacterSizer("1234567890:");
 
 charSizer.calculate();
 
 const textarea = document.querySelector<HTMLTextAreaElement>("textarea")!;
-const domBasicClock = document.querySelector<HTMLElement>("#basic-clock")!;
+const domClock = document.querySelector<HTMLElement>("#basic-clock")!;
 const domCenteredClock = document.querySelector<HTMLElement>(
 	"#centered-clock",
 )!;
 
-domBasicClock.append(basicClock.getContainer());
+domClock.append(clock.getContainer());
 domCenteredClock.append(centeredClock.getContainer());
 textarea.value = JSON.stringify(charSizer.sizes, null, 2);
 
-basicClock.start();
+clock.start();
 
 centeredClock.start(() => {
 	const text = domCenteredClock.textContent ?? "";

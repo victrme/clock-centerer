@@ -1,4 +1,4 @@
-export class Clock {
+export class BasicClock {
 	private dom_hh_separator = document.createElement("span");
 	private dom_mm_separator = document.createElement("span");
 	private container = document.createElement("div");
