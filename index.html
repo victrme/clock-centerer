@@ -30,6 +30,52 @@
 		<div id="centered-clock" class="clock"></div>
 
 		<h2>Centerer data</h2>
+
+		<p>
+			The centerer mesures the character size only once. Size ratios can
+			be then stored in the localStorage for example.
+		</p>
+		<p>Mesuring 20 characters takes about 1ms.</p>
+
 		<textarea id="centerer-data"></textarea>
 	</body>
 </html>
+
+<style>
+	:root {
+		font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
+		color-scheme: light dark;
+		color: rgba(255, 255, 255, 0.87);
+		background-color: #242424;
+
+		@media (prefers-color-scheme: light) {
+			color: #213547;
+			background-color: #ffffff;
+		}
+	}
+
+	body {
+		margin: auto;
+		min-height: 80vh;
+		max-width: 400px;
+	}
+
+	h1 {
+		width: 100%;
+		text-align: center;
+		margin-block: 2em;
+	}
+
+	.clock {
+		width: fit-content;
+		margin: 0.4em auto 1em;
+		font-size: 5em;
+		font-weight: 200;
+		border: 1px solid #666;
+	}
+
+	textarea {
+		width: 100%;
+		min-height: 220px;
+	}
+</style>
