@@ -1,29 +1,28 @@
 import { CharacterSizer } from "./CharacterSizer";
-import { BasicClock } from "./BasicClock";
+import { Clock } from "./Clock";
 
-const clock = new BasicClock();
-const centeredClock = new BasicClock();
+const basicClock = new Clock();
+const centeredClock = new Clock();
 const charSizer = new CharacterSizer("1234567890:");
 
 charSizer.calculate();
+const numberAverage = charSizer.averageOf("1234567890");
 
 const textarea = document.querySelector<HTMLTextAreaElement>("textarea")!;
 const domClock = document.querySelector<HTMLElement>("#basic-clock")!;
-const domCenteredClock = document.querySelector<HTMLElement>(
-	"#centered-clock",
-)!;
+const domCentered = document.querySelector<HTMLElement>("#centered-clock")!;
 
-domClock.append(clock.getContainer());
-domCenteredClock.append(centeredClock.getContainer());
+domClock.append(basicClock.getContainer());
+domCentered.append(centeredClock.getContainer());
 textarea.value = JSON.stringify(charSizer.sizes, null, 2);
 
-clock.start();
+basicClock.start();
 
 centeredClock.start(() => {
-	const text = domCenteredClock.textContent ?? "";
+	const text = domCentered.textContent ?? "";
 	const hoursMinutes = text.slice(0, text.length - 2);
 	const hoursMinutesSize = charSizer.sizeOf(hoursMinutes);
-	const secondsSize = charSizer.averageOf("1234567890") * 2;
+	const secondsSize = numberAverage * 2;
 
-	domCenteredClock.style.width = `${hoursMinutesSize + secondsSize}ch`;
+	domCentered.style.width = `${hoursMinutesSize + secondsSize}ch`;
 });
